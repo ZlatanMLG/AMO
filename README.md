@@ -1,2 +1,2 @@
 # MND_2021
-Repository for AMO labs. 
+Repository for MND labs. 
