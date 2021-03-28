@@ -2,6 +2,8 @@ from random import *
 from pprint import pprint
 import numpy as np
 from math import sqrt
+from scipy.stats import f
+from scipy.stats import t as t_check
 m, N, d = 3, 4, 4
 mat_sX = [[-25, -5], [-30, 45], [-5, 5]]
 mat_1X = [[1, -1, -1, -1], [1, -1, 1, 1], [1, 1, -1, 1], [1, 1, 1, -1]]
@@ -50,18 +52,21 @@ print('Sbs:\n', Sbs)
 bb = [sum(mat_serY[k] * tran1[i][k] for k in range(N))/N for i in range(N)]
 t = [abs(bb[i])/Sbs for i in range(N)]
 print('bi:\n', bb, '\nti:\n', t, '\n...\n..')
+f1, f2 = m - 1, N
+f3 = f1 * f2
 for i in range(N):
-    if t[i] < 2.306:
+    if t[i] < t_check.ppf(q=0.975, df=f3):
         blist[i] = 0
         d -= 1
         print('Виключаємо з рівняння коефіціент b', i)
 y_reg = [blist[0] + blist[1] * mat_X[i][0] + blist[2] * mat_X[i][1] + blist[3] * mat_X[i][2] for i in range(4)]
 print('Значення рівнянь регресій:\n', y_reg)
 print('-------------------------------------------------------------------------\nПЕРЕВІРКА АДЕКВАТНОСТІ ЗА КРИТЕРІЄМ ФІШЕРА:\n')
+f4 = N - d
 Sad = (m / (N - d)) * int(sum(y_reg[i] - mat_serY[i] for i in range(N))**2)
 Fp = Sad / S2b
 print('Кількість значимих коефіціентів:\n', d, '\nFp:\n', Fp, '\n...\n..')
-if Fp > 4.5:
+if Fp > f.ppf(q=0.95, dfn=f4, dfd=f3):
     print('Рівняння регресії неадекватно оригіналу при рівні значимості 0.05')
 else:
     print('Рівняння регресії адекватно оригіналу при рівні значимості 0.05')
