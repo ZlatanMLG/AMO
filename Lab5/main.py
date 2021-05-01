@@ -86,7 +86,10 @@ def coef_b(x, y):
 
 
 def check(mat_serY, mat_Y, tran1, blist, matt_fullX, m):
+    global b1
     d = 11
+    b = 0
+    b1 = 0
     d1 = 11
     mat_disY = [sum([((k1 - mat_serY[j]) ** 2) for k1 in mat_Y[j]]) / m for j in range(N)]
     print("Дисперсії в рядках:\n", mat_disY)
@@ -113,6 +116,7 @@ def check(mat_serY, mat_Y, tran1, blist, matt_fullX, m):
         if t[i] < t_check.ppf(q=0.975, df=f3):
             blist[i] = 0
             d -= 1
+            b += 1
             print('Виключаємо з рівняння коефіціент b', i)
     y_reg = [
         blist[0] * matt_fullX[i][0] + blist[1] * matt_fullX[i][1] + blist[2] * matt_fullX[i][2] + blist[3] * matt_fullX[i][3] + blist[4] *
@@ -124,6 +128,7 @@ def check(mat_serY, mat_Y, tran1, blist, matt_fullX, m):
     f4 = N - d
     Sad = (m / (N - d)) * int(sum(y_reg[i] - mat_serY[i] for i in range(N)) ** 2)
     Fp = Sad / S2b
+    b1 += b
     print('Кількість значимих коефіціентів:\n', d, '\nFp:\n', Fp, '\n...\n..')
     if Fp > f.ppf(q=0.95, dfn=f4, dfd=f3):
         print('Рівняння регресії неадекватно оригіналу при рівні значимості 0.05')
@@ -132,12 +137,14 @@ def check(mat_serY, mat_Y, tran1, blist, matt_fullX, m):
 
 
 def main(N, m):
-    x, mat_Y, mat_serY, mat_2X = create_mat(N, m)
-    tran1 = [list(i) for i in zip(*mat_2X)]
-    b = coef_b(x, mat_serY)
-    check(mat_serY, mat_Y, tran1, b, x, m)
+    b2 = 0
+    for j in range(100):
+        x, mat_Y, mat_serY, mat_2X = create_mat(N, m)
+        tran1 = [list(i) for i in zip(*mat_2X)]
+        b = coef_b(x, mat_serY)
+        check(mat_serY, mat_Y, tran1, b, x, m)
+        b2 += b1
+    print("Cередня кількість незначимих коефіцієнтів на 1 ітерацію: ", b2 / 100)
 
 
 main(15, 3)
-
-
