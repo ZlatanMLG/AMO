@@ -21,6 +21,10 @@ def studentsTtest(normMatrix, matrixY, N):
     sigma = np.sqrt(meanDispers / (N * m))
     betta = np.mean(normMatrix.T * meanY, axis=1)
     t = np.abs(betta) / sigma
+    k = 0
+    for i in range(0, len(t)):
+        if t[i] > Tt:
+            k += 1
     return np.where(t > Tt)
 
 
@@ -144,7 +148,8 @@ while flagOfModel is False:
             print("Дисперсія неоднорідна!")
     if phisherCriterion(yMatrix, np.size(indexes), N):
         flagOfModel = True
-        print("Рівняння регресії адекватно оригіналу.")
+        if len(studentsTtest(normMatrix, yMatrix, N)) != 2:
+            print("Рівняння регресії адекватно оригіналу.")
     else:
         count += 1
         print("Рівняння регресії неадекватно оригіналу.")
